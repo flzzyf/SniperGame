@@ -1,0 +1,39 @@
+fileFormatVersion: 2
+guid: 4e6b9b2d98f173b4293db1cf629e211e
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: f73199e50f24b89419b5089fa8a13a6b, type: 3}
+  textureSettings:
+    pixelsPerUnit: 100
+    spritePivot: {x: 0.5, y: 0}
+    flipTexture: 0
+  animationSettings:
+  - animationName: BankStuff_Pick_Invoice
+    loop: 0
+  - animationName: BankStuff_Filp_Right_Start
+    loop: 0
+  - animationName: BankStuff_Walk_Right
+    loop: 0
+  - animationName: BankStuff_Filp_Right_End
+    loop: 0
+  - animationName: BankStuff_Stand_Filp
+    loop: 0
+  - animationName: BankStuff_Filp_Left_Start
+    loop: 0
+  - animationName: Walk_Left
+    loop: 0
+  - animationName: BankStuff_Filp_Left_End
+    loop: 0
+  - animationName: BankStuff_Stand_Start01
+    loop: 0
+  - animationName: BankStuff_Stand_End01
+    loop: 0
+  - animationName: BankStuff_Stand
+    loop: 0
+  generateAnimation: 1
+  addSuffix: 0
