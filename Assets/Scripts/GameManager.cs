@@ -4,18 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using System.Linq;
+using System;
 
 public enum AimState { Outside, Crossing, Inside }
 
 public class GameManager : Singleton<GameManager> {
     public Cross cross;
     public AimCircle aimCircle;
-
-    //命中率
-    public static float chances;
-
-    public Text text_Chances;
-    public Slider slider_Chances;
 
     AimState aimState;
     AimState lastAimState;
@@ -24,17 +19,23 @@ public class GameManager : Singleton<GameManager> {
     public Color color_Crossing;
     public Color color_Inside;
 
-    public static SniperData SniperData;
-    public SniperData sniperData;
+    public static SniperData sniperData {
+        get {
+            return instance.SniperData;
+        }
+    }
+    public SniperData SniperData;
+
+    Camera cam;
 
     private void Awake() {
-        SniperData = sniperData;
+        cam = Camera.main;
 
         aimCircle.SetRadius(sniperData.aimRatePhase1Radius);
 
-        StartCoroutine(AutoGenerateMissiles());
+        //StartCoroutine(AutoGenerateMissiles());
 
-        StartCoroutine(GenerateObstacles());
+        //StartCoroutine(GenerateObstacles());
 
         InitFocusValue();
     }
@@ -87,13 +88,9 @@ public class GameManager : Singleton<GameManager> {
 
         //专注
         UpdateFocus();
-    }
 
-    IEnumerator GenerateObstacles() {
-        while (true) {
-            yield return new WaitForSeconds(Random.Range(8, 14));
-
-            GenerateObstacle();
+        if (Input.GetKeyDown("f")) {
+            StartCoroutine(GenerateLevels(sniperData.levels));
         }
     }
 
@@ -115,6 +112,13 @@ public class GameManager : Singleton<GameManager> {
     #endregion
 
     #region 命中率
+
+    //命中率
+    public static float chances;
+
+    //命中率UI
+    public Text text_Chances;
+    public Slider slider_Chances;
 
     //设置命中率文本
     public void SetChances(float chances) {
@@ -159,6 +163,7 @@ public class GameManager : Singleton<GameManager> {
                 //耐力不足30%也可以抵消一次攻击
 
                 //扩散圈变为最大
+                cross.SetOuterCirclePercent(1);
 
                 //暂时禁用集中直到回到50%
                 focusDisbled = true;
@@ -177,71 +182,98 @@ public class GameManager : Singleton<GameManager> {
 
     public Missile missilePrefab;
 
-    public void GenerateMissile() {
-        Vector2 pos = GenerateOutsidePoint();
+    public void GenerateMissile(Vector2 pos) {
         Missile missile = Instantiate(missilePrefab, pos, Quaternion.identity, Camera.main.transform);
 
-        float offsetValue = .1f;
-        Vector2 randomOffset = new Vector2(Random.Range(-offsetValue, offsetValue), Random.Range(-offsetValue, offsetValue));
-        Vector2 targetPoint = (Vector2)cross.transform.position + randomOffset;
+        //float offsetValue = .1f;
+        //Vector2 randomOffset = new Vector2(Random.Range(-offsetValue, offsetValue), Random.Range(-offsetValue, offsetValue));
+        //Vector2 targetPoint = (Vector2)cross.transform.position + randomOffset;
+        Vector2 targetPoint = cam.transform.position;
         Vector2 dir = (targetPoint - pos).normalized;
         missile.MoveToward(dir);
 
         //尺寸随机
-        float size = Random.Range(1, 3);
-        float speed = sniperData.missileSpeed / size;
-        missile.transform.localScale = Vector3.one * size;
-        missile.speed = speed;
+        //float size = Random.Range(1, 3);
+        //float speed = sniperData.missileSpeed / size;
+        //missile.transform.localScale = Vector3.one * size;
+        //missile.speed = speed;
     }
 
-    float missileGenerateRate {
-        get {
-            return sniperData.missileRate + chances * sniperData.missileRateBoostPerAimRate;
+    //生成大型障碍物
+    //IEnumerator GenerateObstacles() {
+    //    while (true) {
+    //        yield return new WaitForSeconds(Random.Range(8, 14));
+
+    //        GenerateObstacle();
+    //    }
+    //}
+
+    //生成关卡
+    IEnumerator GenerateLevels(SniperLevel[] levels, Action onComplete = null) {
+        Queue<Action> actionQueue = new Queue<Action>();
+
+        foreach (var item in levels) {
+            actionQueue.Enqueue(() => {
+                GenerateWaves(item.waves, () => {
+                    if(actionQueue.Count > 0) {
+                        actionQueue.Dequeue().Invoke();
+                    } else {
+                        onComplete?.Invoke();
+                    }
+                });
+            });
         }
+
+        actionQueue.Dequeue().Invoke();
+
+        yield return null;
     }
 
-    IEnumerator AutoGenerateMissiles() {
-        while (true) {
-            yield return new WaitForSeconds(1 / missileGenerateRate);
+    //生成各个波次
+    void GenerateWaves(Wave[] waves, Action onComplete = null) {
+        Queue<Action> waveGenerateQueue = new Queue<Action>();
 
-            GenerateMissile();
+        foreach (var item in waves) {
+            waveGenerateQueue.Enqueue(() => {
+                StartCoroutine(GenerateWave(item, () => {
+                    if (waveGenerateQueue.Count > 0) {
+                        waveGenerateQueue.Dequeue().Invoke();
+                    }
+                }));
+            });
         }
+
+        waveGenerateQueue.Enqueue(() => {
+            onComplete?.Invoke();
+        });
+
+        waveGenerateQueue.Dequeue().Invoke();
     }
 
-    //获取一个屏幕外的点
-    Vector2 GenerateOutsidePoint() {
-        float x;
-        float y;
-        int index = Random.Range(0, 5);
-        if (index == 0) {
-            x = -ScreenSize.x / 2 - .1f;
-            y = Random.Range(-ScreenSize.y / 2, ScreenSize.y / 2);
-        }
-        else if (index == 1) {
-            x = ScreenSize.x / 2 + .1f;
-            y = Random.Range(-ScreenSize.y / 2, ScreenSize.y / 2);
-        }
-        else if (index == 2) {
-            y = -ScreenSize.y / 2 - .1f;
-            x = Random.Range(-ScreenSize.x / 2, ScreenSize.x / 2);
-        } else {
-            y = ScreenSize.y / 2 + .1f;
-            x = Random.Range(-ScreenSize.x / 2, ScreenSize.x / 2);
+    //生成波次
+    IEnumerator GenerateWave(Wave wave, Action onComplete = null) {
+        float angle = wave.startAngle;
+        for (int i = 0; i < wave.number; i++) {
+            GenerateMissile(GetMissileGeneratePoint(angle));
+
+            angle += wave.increasement;
+
+            if(wave.interval > 0)
+                yield return new WaitForSeconds(wave.interval);
         }
 
+        yield return new WaitForSeconds(wave.waitTime);
 
-
-        return (Vector2)Camera.main.transform.position +  new Vector2(x, y);
+        onComplete?.Invoke();
     }
 
-    Vector2 ScreenSize {
-        get {
-            Camera cam = Camera.main;
+    Vector2 GetMissileGeneratePoint(float angle) {
+        float radius = Mathf.Sqrt(Mathf.Pow(ScreenSize.x, 2) + Mathf.Pow(ScreenSize.y, 2)) / 2;
+        radius += .2f;
 
-            float ratio = (float)Screen.width / Screen.height;
+        Vector2 offset = new Vector2(Mathf.Sin(angle * Mathf.Deg2Rad), Mathf.Cos(angle * Mathf.Deg2Rad)) * radius;
 
-            return new Vector2(cam.orthographicSize * ratio, cam.orthographicSize) * 2;
-        }
+        return (Vector2)cam.transform.position + offset;
     }
 
     #endregion
@@ -328,16 +360,6 @@ public class GameManager : Singleton<GameManager> {
 
     #endregion
 
-    public float backgroundMoveSpeed = .03f;
-
-    public Transform background;
-    public Target target;
-
-    //背景移动
-    void BackgroundMove(Vector2 dir) {
-
-    }
-
     #region 专注值（耐力）
 
     float focusValue;
@@ -369,6 +391,8 @@ public class GameManager : Singleton<GameManager> {
     }
 
     void SetFocusValue(float value) {
+        value = Mathf.Clamp(value, 0, focusValueMax);
+
         focusValue = value;
 
         slider_Focus.value = value / focusValueMax;
@@ -398,13 +422,15 @@ public class GameManager : Singleton<GameManager> {
     bool focusDisbled;
 
     void UpdateFocus() {
-        //按下
-        foreach (var item in focusKeys) {
-            if (Input.GetKeyDown(item)) {
+        //如果集中没被禁用，按下按键，开始集中
+        if (!focusDisbled) {
+            foreach (var item in focusKeys) {
+                if (Input.GetKeyDown(item)) {
 
-                StartFocus();
+                    StartFocus();
 
-                return;
+                    return;
+                }
             }
         }
 
@@ -426,6 +452,14 @@ public class GameManager : Singleton<GameManager> {
         } else {
             //准心扩散
             cross.CrossSpread();
+        }
+
+        //集中被禁用
+        if (focusDisbled) {
+            //如果耐力超过50%，结束禁用
+            if(focusValue / focusValueMax > .5f) {
+                focusDisbled = false;
+            }
         }
     }
 
@@ -511,6 +545,40 @@ public class GameManager : Singleton<GameManager> {
     }
 
     #endregion
+
+    #region （废弃）背景移动
+
+    public float backgroundMoveSpeed = .03f;
+
+    public Transform background;
+    public Target target;
+
+    //背景移动
+    void BackgroundMove(Vector2 dir) {
+
+    }
+
+    #endregion
+
+    #region Util
+
+    Vector2 ScreenSize {
+        get {
+            Camera cam = Camera.main;
+
+            float ratio = (float)Screen.width / Screen.height;
+
+            return new Vector2(cam.orthographicSize * ratio, cam.orthographicSize) * 2;
+        }
+    }
+
+    #endregion
+
+    private void OnDrawGizmos() {
+        float radius = Mathf.Sqrt(Mathf.Pow(ScreenSize.x, 2) + Mathf.Pow(ScreenSize.y, 2)) / 2;
+        radius += .2f;
+        Gizmos.DrawWireSphere(Camera.main.transform.position, radius);
+    }
 
 }
 

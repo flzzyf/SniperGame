@@ -11,10 +11,10 @@ public class Cross : MonoBehaviour {
     Vector2 lastMousePos;
 
     private void Awake() {
-        speed = GameManager.SniperData.speed;
-        minOuterCircleRadius = GameManager.SniperData.minOuterCircleRadius;
-        maxOuterCircleRadius = GameManager.SniperData.maxOuterCircleRadius;
-        shrinkRatePerSecond = GameManager.SniperData.shrinkRatePerSecond;
+        speed = GameManager.sniperData.speed;
+        minOuterCircleRadius = GameManager.sniperData.minOuterCircleRadius;
+        maxOuterCircleRadius = GameManager.sniperData.maxOuterCircleRadius;
+        shrinkRatePerSecond = GameManager.sniperData.shrinkRatePerSecond;
 
         shrinkRate = maxOuterCircleRadius * shrinkRatePerSecond;
         spreadRate = maxOuterCircleRadius * spreadRatePerSecond;
@@ -49,11 +49,7 @@ public class Cross : MonoBehaviour {
         if((Vector2)transform.position != targetPoint) {
             //移动
             MoveToward(targetPoint, speed * Time.fixedDeltaTime);
-
-            
-        } else {
-            
-        }
+        } 
     }
 
     #region 准心移动
@@ -110,7 +106,7 @@ public class Cross : MonoBehaviour {
     float shrinkRatePerSecond = .05f;
     float spreadRatePerSecond {
         get {
-            return GameManager.SniperData.spreadRatePerSecond;
+            return GameManager.sniperData.spreadRatePerSecond;
         }
     }
 
@@ -138,6 +134,11 @@ public class Cross : MonoBehaviour {
         if(outerCircleRadius < maxOuterCircleRadius * .1f) {
             SetOuterCricleRadius(maxOuterCircleRadius * .1f);
         }
+    }
+
+    //设置外圈比例
+    public void SetOuterCirclePercent(float percent) {
+        SetOuterCricleRadius(maxOuterCircleRadius * percent);
     }
 
     #endregion

@@ -12,8 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83adb39c3f2bfbb49bdcf279f09c92b6, type: 3}
   m_Name: SniperData
   m_EditorClassIdentifier: 
+  levels:
+  - waves:
+    - missile: 0
+      number: 10
+      startAngle: 0
+      increasement: 18
+      interval: 0.04
+      waitTime: 1
+    - missile: 0
+      number: 10
+      startAngle: 180
+      increasement: 18
+      interval: 0.04
+      waitTime: 1
+  - waves:
+    - missile: 0
+      number: 120
+      startAngle: 45
+      increasement: 3
+      interval: 0.02
+      waitTime: 1
+    - missile: 0
+      number: 20
+      startAngle: 0
+      increasement: 10
+      interval: 0.03
+      waitTime: 0
   focusValueMax: 100
-  focusRegenRate: 2
+  focusRegenRate: 6
   speed: 0.8
   minOuterCircleRadius: 0.002
   maxOuterCircleRadius: 0.2
@@ -26,4 +53,4 @@ MonoBehaviour:
   missileRate: 0.5
   missileRateBoostPerAimRate: 0.03
   missileSpeed: 0.35
-  aimRateMultiplier: 10
+  aimRateMultiplier: 2

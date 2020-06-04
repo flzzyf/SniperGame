@@ -22,7 +22,7 @@ public class Missile : MonoBehaviour {
     private void Awake() {
         cam = Camera.main;
 
-        speed = GameManager.SniperData.missileSpeed;
+        speed = GameManager.sniperData.missileSpeed;
     }
 
     private void Update() {
@@ -39,17 +39,13 @@ public class Missile : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
-        if (isKickBack) {
-            
-        } else {
-            if (!collision.collider.CompareTag("Player")) {
-                return;
+        if (!isKickBack) {
+            if (collision.collider.CompareTag("Player")) {
+                if (collision.collider.GetComponent<Cross>().Hit(transform)) {
+                    Destroy(gameObject);
+                }
             }
-
-            if (collision.collider.GetComponent<Cross>().Hit(transform)) {
-                Destroy(gameObject);
-            }
-        }
+        } 
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {

@@ -5,6 +5,10 @@ using UnityEngine.Serialization;
 
 [CreateAssetMenu(menuName = "ScriptableObject/SniperData")]
 public class SniperData : ScriptableObject {
+
+    [Header("关卡")]
+    public SniperLevel[] levels;
+
     [Header("集中最大值")]
     [Header("集中")]
     public float focusValueMax = 100;
@@ -55,6 +59,4 @@ public class SniperData : ScriptableObject {
     [Header("测试")]
     [Space(20)]
     public float aimRateMultiplier = 2;
-
-    
 }
