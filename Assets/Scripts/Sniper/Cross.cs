@@ -16,8 +16,8 @@ public class Cross : MonoBehaviour {
         maxOuterCircleRadius = GameManager.SniperData.maxOuterCircleRadius;
         shrinkRatePerSecond = GameManager.SniperData.shrinkRatePerSecond;
 
-        spreadRate = speed / 2;
         shrinkRate = maxOuterCircleRadius * shrinkRatePerSecond;
+        spreadRate = maxOuterCircleRadius * spreadRatePerSecond;
     }
 
     void Start() {
@@ -40,9 +40,9 @@ public class Cross : MonoBehaviour {
             lastMousePos = Input.mousePosition;
 
             targetPoint = mousePos;
-
-            //transform.position = mousePos;
         }
+
+        moving = (Vector2)transform.position != targetPoint;
     }
 
     private void FixedUpdate() {
@@ -50,22 +50,21 @@ public class Cross : MonoBehaviour {
             //移动
             MoveToward(targetPoint, speed * Time.fixedDeltaTime);
 
-            //准心扩散
-            CrossSpread();
+            
         } else {
-            //准心收缩
-            CrossShrink();
+            
         }
     }
 
     #region 准心移动
 
-    float speed = 3;
+    public float speed = 3;
 
     //移动的目标点
     Vector2 targetPoint;
 
-    Vector2 velocity;
+    //移动中
+    public bool moving;
 
     //向目标点移动
     void MoveToward(Vector2 targetPoint, float moveDistance) {
@@ -103,12 +102,17 @@ public class Cross : MonoBehaviour {
     float minOuterCircleRadius = .05f;
     float maxOuterCircleRadius = .2f;
 
-    //准心扩散率
-    float spreadRate;
     //准心缩小率
     float shrinkRate;
+    //扩散率
+    float spreadRate;
 
     float shrinkRatePerSecond = .05f;
+    float spreadRatePerSecond {
+        get {
+            return GameManager.SniperData.spreadRatePerSecond;
+        }
+    }
 
     //设置外圆半径
     void SetOuterCricleRadius(float radius) {
@@ -120,13 +124,20 @@ public class Cross : MonoBehaviour {
     }
 
     //准心扩散
-    void CrossSpread() {
-        SetOuterCricleRadius(outerCircleRadius + Time.fixedDeltaTime * spreadRate);
+    public void CrossSpread() {
+        SetOuterCricleRadius(outerCircleRadius + Time.deltaTime * spreadRate);
     }
 
     //准心收缩
-    void CrossShrink() {
-        SetOuterCricleRadius(outerCircleRadius - Time.fixedDeltaTime * shrinkRate);
+    public void CrossShrink() {
+        SetOuterCricleRadius(outerCircleRadius - Time.deltaTime * shrinkRate);
+    }
+
+    //结束专注后准心瞬间扩散
+    public void CrossInstantSpread() {
+        if(outerCircleRadius < maxOuterCircleRadius * .1f) {
+            SetOuterCricleRadius(maxOuterCircleRadius * .1f);
+        }
     }
 
     #endregion
@@ -141,8 +152,8 @@ public class Cross : MonoBehaviour {
             return false;
         }
 
-        //扣除命中
-        GameManager.instance.ModifyChances(-5);
+        //被击中
+        GameManager.instance.Hit();
 
         //无敌一段时间
         StartCoroutine(SetInvincible(.3f));

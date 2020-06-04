@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq;
+
+public enum AimState { Outside, Crossing, Inside }
 
 public class GameManager : Singleton<GameManager> {
     public Cross cross;
@@ -29,8 +32,6 @@ public class GameManager : Singleton<GameManager> {
 
         aimCircle.SetRadius(sniperData.aimRatePhase1Radius);
 
-        missilesInCircle = new List<Missile>();
-
         StartCoroutine(AutoGenerateMissiles());
 
         StartCoroutine(GenerateObstacles());
@@ -44,10 +45,10 @@ public class GameManager : Singleton<GameManager> {
         Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
         aimState = AimState.Outside;
 
-        if (targetCircle.IsPointInCircle(cross.transform.position)) {
-            aimState = AimState.Crossing;
-            chances += Time.deltaTime * sniperData.aimRateMultiplier;
-        }
+        //if (targetCircle.IsPointInCircle(cross.transform.position)) {
+        //    aimState = AimState.Crossing;
+        //    chances += Time.deltaTime * sniperData.aimRateMultiplier;
+        //}
 
         if (targetCircle.GetCircleRelation(crossCircle) == CircleRelations.Contain) {
             aimState = AimState.Inside;
@@ -68,15 +69,6 @@ public class GameManager : Singleton<GameManager> {
                 aimCircle.SetColor(color_Inside);
             }
         }
-
-        //if (Input.GetKeyDown(KeyCode.Space)) {
-        //    //消除扩散圈内所有飞弹
-        //    KillMissilesInCircle();
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.F)) {
-        //    GenerateMissile();
-        //}
 
         //DetectMissilesInCircle();
 
@@ -105,6 +97,8 @@ public class GameManager : Singleton<GameManager> {
         }
     }
 
+    #region 胜利界面
+
     public GameObject gameWinWindow;
     bool gameWin;
 
@@ -117,6 +111,8 @@ public class GameManager : Singleton<GameManager> {
 
         gameWin = true;
     }
+
+    #endregion
 
     #region 命中率
 
@@ -153,6 +149,26 @@ public class GameManager : Singleton<GameManager> {
         float phase = (Mathf.Clamp(chances, min, max) - min) / (max - min);
 
         return phase;
+    }
+
+    public void Hit() {
+        if(isFocusing) {
+            if(focusValue > 30) {
+                ModifyFocusValue(-30);
+            } else {
+                //耐力不足30%也可以抵消一次攻击
+
+                //扩散圈变为最大
+
+                //暂时禁用集中直到回到50%
+                focusDisbled = true;
+                //强制结束集中
+                EndFocus();
+
+            }
+        } else {
+            ModifyChances(-5);
+        }
     }
 
     #endregion
@@ -236,14 +252,8 @@ public class GameManager : Singleton<GameManager> {
 
     public float focusValueToKill = 4;
 
-    //消除圈内弹幕
-    void KillMissilesInCircle() {
-        if(focusValue < focusValueToKill) {
-            return;
-        }
-
-        ModifyFocusValue(-focusValueToKill);
-
+    //获取扩散圈上的飞弹
+    List<Missile> GetMissilesOnCircle() {
         var colliders = Physics2D.OverlapCircleAll(cross.transform.position, cross.outerCircleRadius, missileMask);
 
         HashSet<Missile> missileSet = new HashSet<Missile>();
@@ -251,47 +261,59 @@ public class GameManager : Singleton<GameManager> {
         for (int i = 0; i < colliders.Length; i++) {
             Missile missile = colliders[i].GetComponent<Missile>();
 
-            missileSet.Add(missile);
+            Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
+            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.GetComponent<CircleCollider2D>().radius * missile.transform.localScale.x };
+            if (crossCircle.GetCircleRelation(missileCircle) == CircleRelations.Intersect) {
+                missileSet.Add(missile);
+            }
         }
 
-        foreach (var item in missileSet) {
-            //如果相交
-            Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
-            Circle missileCircle = new Circle { center = item.transform.position, radius = item.GetComponent<CircleCollider2D>().radius * item.transform.localScale.x };
-            if (crossCircle.GetCircleRelation(missileCircle) == CircleRelations.Intersect) {
-                ModifyChances(2);
+        return missileSet.ToList();
+    }
 
-                Vector2 dir = (item.transform.position - cross.transform.position).normalized;
-                item.Kick(dir);
-            } else {
-                //item.Die();
+    //获取圈内的飞弹
+    List<Missile> GetMissilesInCircle(Vector2 pos, float radius) {
+        var colliders = Physics2D.OverlapCircleAll(pos, radius, missileMask);
+
+        HashSet<Missile> missileSet = new HashSet<Missile>();
+
+        for (int i = 0; i < colliders.Length; i++) {
+            Missile missile = colliders[i].GetComponent<Missile>();
+
+            Circle crossCircle = new Circle { center = pos, radius = radius };
+            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.GetComponent<CircleCollider2D>().radius * missile.transform.localScale.x };
+            if (crossCircle.GetCircleRelation(missileCircle) != CircleRelations.Separate) {
+                missileSet.Add(missile);
             }
+        }
 
+        return missileSet.ToList();
+    }
+
+    //消除扩散圈上的飞弹
+    void KillMissiles() {
+        //消除与扩散圈相交的飞弹
+        var missiles = GetMissilesOnCircle();
+        while (missiles.Count > 0) {
+            missiles[0].Die();
+
+            ModifyFocusValue(2);
+
+            missiles.RemoveAt(0);
         }
     }
 
-    List<Missile> missilesInCircle;
+    //反弹扩散圈上的飞弹
+    void KickMissiles() {
+        //消除与扩散圈相交的飞弹
+        var missiles = GetMissilesOnCircle();
+        while (missiles.Count > 0) {
+            Vector2 dir = (missiles[0].transform.position - cross.transform.position).normalized;
+            missiles[0].Kick(dir);
 
-    //void DetectMissilesInCircle() {
-    //    var colliders = Physics2D.OverlapCircleAll(cross.transform.position, cross.outerCircleRadius, missileMask);
-
-    //    foreach (var item in colliders) {
-    //        if (!missilesInCircle.Contains(item.GetComponent<Missile>())) {
-    //            item.GetComponent<Missile>().SetAlpha(.1f, .1f);
-
-    //            missilesInCircle.Add(item.GetComponent<Missile>());
-    //        }
-    //    }
-
-    //    Circle targetCircle = new Circle { center = aimCircle.transform.position, radius = aimCircle.transform.localScale.x / 2 };
-    //    for (int i = missilesInCircle.Count - 1; i >= 0; i--) {
-    //        Missile missile = missilesInCircle[i];
-    //        Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.GetComponent<CircleCollider2D>().radius };
-    //        if(targetCircle.GetCircleRelation(missileCircle) != CircleRelations.Intersect) {
-    //            missile.SetAlpha(1f, .1f);
-    //        }
-    //    }
-    //}
+            missiles.RemoveAt(0);
+        }
+    }
 
     #endregion
 
@@ -336,10 +358,13 @@ public class GameManager : Singleton<GameManager> {
 
     //更新专注值
     void UpdateFocusValue() {
-        if(focusValue < focusValueMax) {
-            ModifyFocusValue(focusRegenRate * Time.deltaTime);
-        } else if(focusValue > focusValueMax) {
-            SetFocusValue(focusValueMax);
+        if (!isFocusing) {
+            //自动回复耐力
+            if (focusValue < focusValueMax) {
+                ModifyFocusValue(focusRegenRate * Time.deltaTime);
+            } else if (focusValue > focusValueMax) {
+                SetFocusValue(focusValueMax);
+            }
         }
     }
 
@@ -349,9 +374,8 @@ public class GameManager : Singleton<GameManager> {
         slider_Focus.value = value / focusValueMax;
     }
 
-    void ModifyFocusValue(float modify) {
+    public void ModifyFocusValue(float modify) {
         SetFocusValue(focusValue + modify);
-
     }
 
     #endregion
@@ -364,8 +388,14 @@ public class GameManager : Singleton<GameManager> {
     //集中中
     bool isFocusing;
 
+    //触发点击集中过了
+    bool isFocusClicked;
+
     //目前集中的时间
     float focusTime;
+
+    //集中被禁用
+    bool focusDisbled;
 
     void UpdateFocus() {
         //按下
@@ -393,47 +423,94 @@ public class GameManager : Singleton<GameManager> {
             } else {
                 StayFocus();
             }
-
-
+        } else {
+            //准心扩散
+            cross.CrossSpread();
         }
     }
 
     //开始集中
     void StartFocus() {
-        Debug.Log("开始集中");
+        //Debug.Log("开始集中");
 
         isFocusing = true;
 
         //扣除耐力
         ModifyFocusValue(-5);
 
+        //移动速度修改
+        cross.speed *= .7f;
     }
 
     //结束集中
     void EndFocus() {
-        Debug.Log("结束集中");
+        //Debug.Log("结束集中");
 
+        //长按0.1秒后，0.3秒内算点击
+        if (!isFocusClicked && focusTime < .3f) {
+            FocusClick();
+        }
+
+        //移动速度修改
+        cross.speed /= .7f;
+
+        //瞬间扩散
+        cross.CrossInstantSpread();
+
+        //结束集中后，根据集中时间触发不同效果
+        if(focusTime >= .3f && focusTime < .5f) {
+            KillMissiles();
+        }
+        else if(focusTime >= .5f && focusTime < 1) {
+            var missiles = GetMissilesOnCircle();
+            while (missiles.Count > 0) {
+                var m2 = GetMissilesInCircle(missiles[0].transform.position, .1f);
+                while (m2.Count > 0) {
+                    m2[0].Die();
+
+                    m2.RemoveAt(0);
+                }
+                missiles.RemoveAt(0);
+            }
+        }
+        else if(focusTime >= 1) {
+            KickMissiles();
+        }
+
+        focusTime = 0;
         isFocusing = false;
-
+        isFocusClicked = false;
     }
 
     //保持集中
     void StayFocus() {
-        Debug.Log("保持集中");
+        //Debug.Log("保持集中");
 
         focusTime += Time.deltaTime;
 
+        //每秒消耗耐力
+        if(focusTime > .3f) {
+            ModifyFocusValue(-5 * Time.deltaTime);
+        }
+
+        if (!cross.moving) {
+            //准心收缩
+            cross.CrossShrink();
+        }
     }
 
     //单击集中
     void FocusClick() {
-        Debug.Log("单击集中");
+        //Debug.Log("单击集中");
+
+        isFocusClicked = true;
 
         focusTime = 0;
+
+        KillMissiles();
     }
 
     #endregion
 
 }
 
-public enum AimState { Outside, Crossing, Inside}

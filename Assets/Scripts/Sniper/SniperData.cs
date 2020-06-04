@@ -20,10 +20,12 @@ public class SniperData : ScriptableObject {
     [Header("扩散圈最大半径")]
     public float maxOuterCircleRadius = .2f;
 
-    [Header("每秒缩小百分比")]
+    [Header("缩小速率（每秒百分比）")]
     public float shrinkRatePerSecond = .2f;
+    [Header("扩大速率（每秒百分比）")]
+    public float spreadRatePerSecond = .33f;
 
-    
+
     [Header("命中率1阶段百分比")]
     [Range(0, 1)]
     [Header("判定圈")]

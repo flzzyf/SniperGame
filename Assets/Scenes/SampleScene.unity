@@ -776,8 +776,6 @@ MonoBehaviour:
   backgroundMoveSpeed: 0.03
   background: {fileID: 0}
   target: {fileID: 0}
-  focusValueMax: 10
-  focusRegenRate: 2
   slider_Focus: {fileID: 316501446}
 --- !u!114 &657758714
 MonoBehaviour:

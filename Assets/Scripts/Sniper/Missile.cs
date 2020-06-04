@@ -55,6 +55,8 @@ public class Missile : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D collision) {
         if (isKickBack) {
             if (collision.CompareTag("Missile")) {
+                GameManager.instance.ModifyFocusValue(2);
+
                 collision.GetComponent<Missile>().Die();
             }
         }
