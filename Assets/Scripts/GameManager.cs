@@ -38,7 +38,9 @@ public class GameManager : Singleton<GameManager> {
 
         InitFocusValue();
 
-        StartCoroutine(GenerateLevels(sniperData.levels));
+        StartCoroutine(GenerateLevels(sniperData.levels, () => {
+            StartCoroutine(GenerateLevels(sniperData.levels));
+        }));
 
     }
 
@@ -50,7 +52,13 @@ public class GameManager : Singleton<GameManager> {
 
         if (targetCircle.GetCircleRelation(crossCircle) == CircleRelations.Contain) {
             aimState = AimState.Inside;
-            chances += Time.deltaTime * sniperData.aimRateMultiplier;
+            chances += Time.deltaTime * sniperData.aimRateMultiplier * sniperData.aimRateFocusPerSecond;
+        }
+
+        //准心在十字线圈内
+        Circle crossLineCircle = new Circle { center = crossLine.transform.position, radius = crossLine.crossLineCircleRadius };
+        if (crossLineCircle.GetCircleRelation(crossCircle) == CircleRelations.Contain) {
+            chances += Time.deltaTime * sniperData.aimRateMultiplier * sniperData.aimRateCorssLinePerSecond;
         }
 
         SetChances(chances);
@@ -67,8 +75,6 @@ public class GameManager : Singleton<GameManager> {
                 aimCircle.SetColor(color_Inside);
             }
         }
-
-        //DetectMissilesInCircle();
 
         UpdateFocusValue();
 
@@ -411,6 +417,12 @@ public class GameManager : Singleton<GameManager> {
         focusValue = value;
 
         slider_Focus.value = value / focusValueMax;
+
+        if (isFocusing) {
+            if (value <= 0) {
+                EndFocus();
+            }
+        }
     }
 
     public void ModifyFocusValue(float modify) {

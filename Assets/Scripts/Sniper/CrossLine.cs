@@ -8,15 +8,22 @@ public class CrossLine : MonoBehaviour {
 
     public float maxDistance = .8f;
 
-    //抖动幅度
-    public float magnitute = 1;
-
     public float speed = 2;
     bool moving;
 
+    //抖动幅度
     public float offsetMagnitude = .03f;
 
     Camera cam;
+
+    [Header("十字线区域")]
+    public Transform crossLineCircle;
+
+    public float crossLineCircleRadius = .2f;
+
+    private void OnValidate() {
+        crossLineCircle.localScale = Vector3.one * crossLineCircleRadius * 2;
+    }
 
     private void Awake() {
         cam = Camera.main;
@@ -27,6 +34,9 @@ public class CrossLine : MonoBehaviour {
         transform.position = (Vector2)cam.transform.position + dir * maxDistance;
 
         distance = maxDistance;
+
+        crossLineCircleRadius = GameManager.sniperData.crossLineRadius;
+        crossLineCircle.localScale = Vector3.one * crossLineCircleRadius * 2;
     }
 
     void MoveTo(Vector2 pos) {

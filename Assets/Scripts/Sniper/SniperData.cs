@@ -9,6 +9,10 @@ public class SniperData : ScriptableObject {
     [Header("关卡")]
     public SniperLevel[] levels;
 
+    [Header("十字线区域半径")]
+    [Header("十字线")]
+    public float crossLineRadius = .08f;
+
     [Header("集中最大值")]
     [Header("集中")]
     public float focusValueMax = 100;
@@ -20,6 +24,13 @@ public class SniperData : ScriptableObject {
     [Header("集中每秒消耗的耐力")]
     public float focusValuePerSecond = 5;
 
+    [Header("集中且处于判定圈时每秒命中率提升")]
+    public float aimRateFocusPerSecond = 2;
+    [Header("集中且处于十字线圈时每秒命中率提升")]
+    public float aimRateCorssLinePerSecond = 4;
+
+    [Header("集中时的准心移动速度倍率")]
+    public float focusSpeedMultiplier = .7f;
 
     [Header("每秒移动速度（1单位=100像素)")]
     [Header("准心")]
