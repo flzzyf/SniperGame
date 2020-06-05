@@ -15,6 +15,12 @@ public class SniperData : ScriptableObject {
     [Header("集中每秒恢复量")]
     public float focusRegenRate = 2;
 
+    [Header("进入集中状态消耗的耐力")]
+    public float focusValueFocus = 5;
+    [Header("集中每秒消耗的耐力")]
+    public float focusValuePerSecond = 5;
+
+
     [Header("每秒移动速度（1单位=100像素)")]
     [Header("准心")]
     public float speed = .5f;
@@ -54,6 +60,9 @@ public class SniperData : ScriptableObject {
 
     [Header("投射物速度")]
     public float missileSpeed = .5f;
+
+    [Header("投射物被击飞时的速度倍率")]
+    public float missileKickSpeedMultiplier = 3;
 
     [Header("命中率上升倍率")]
     [Header("测试")]

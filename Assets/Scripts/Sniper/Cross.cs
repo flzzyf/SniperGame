@@ -157,7 +157,7 @@ public class Cross : MonoBehaviour {
         GameManager.instance.Hit();
 
         //无敌一段时间
-        StartCoroutine(SetInvincible(.3f));
+        StartCoroutine(SetInvincible(.6f));
 
         //弹开
         Vector2 dir = (transform.position - hiter.position).normalized;

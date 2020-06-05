@@ -69,8 +69,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1976813191
   m_SortingLayer: 1
-  m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 408483944c6e215459db52196088735a, type: 3}
+  m_SortingOrder: 2
+  m_Sprite: {fileID: 21300000, guid: a70e344f4335a404f81deae3715ffe2e, type: 3}
   m_Color: {r: 1, g: 0.77412665, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -93,8 +93,6 @@ GameObject:
   - component: {fileID: 9097348705088212430}
   - component: {fileID: 109810909311717075}
   - component: {fileID: 1736812925526820878}
-  - component: {fileID: 5787082285094357687}
-  - component: {fileID: 3315013543847299580}
   m_Layer: 8
   m_Name: Missile
   m_TagString: Missile
@@ -140,8 +138,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f52e709d2fac6b47bcf1988a299b17e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedMultipiler: 1
   particle_MissileExplode: {fileID: 6048405251229489486, guid: 2c9dd702c24f77f4c8103d76f2b9b024,
     type: 3}
+  innerRadius: 0.05
 --- !u!58 &1736812925526820878
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -158,43 +158,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.038
---- !u!58 &5787082285094357687
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9097348705088212424}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.017
---- !u!50 &3315013543847299580
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9097348705088212424}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!1 &9097348705413842697
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,8 +228,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1976813191
   m_SortingLayer: 1
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 408483944c6e215459db52196088735a, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: a70e344f4335a404f81deae3715ffe2e, type: 3}
   m_Color: {r: 1, g: 0.44935164, b: 0, a: 0.54509807}
   m_FlipX: 0
   m_FlipY: 0

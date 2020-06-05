@@ -4,8 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 
 public class Missile : MonoBehaviour {
-    [HideInInspector]
-    public float speed = 4;
+    public float speedMultipiler = 1;
 
     Vector2 dir;
     Camera cam;
@@ -15,14 +14,19 @@ public class Missile : MonoBehaviour {
 
     public ParticleSystem particle_MissileExplode;
 
+    public float innerRadius = 0.05f;
+    public float outerRadius {
+        get {
+            return GetComponent<CircleCollider2D>().radius;
+        }
+    }
+
     public void MoveToward(Vector2 dir) {
         this.dir = dir;
     }
 
     private void Awake() {
         cam = Camera.main;
-
-        speed = GameManager.sniperData.missileSpeed;
     }
 
     private void Update() {
@@ -33,29 +37,29 @@ public class Missile : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        if(dir != default) {
-            transform.Translate(dir * speed * Time.fixedDeltaTime);
+        if (dir != default) {
+            transform.Translate(dir * speedMultipiler * GameManager.sniperData.missileSpeed * Time.fixedDeltaTime);
         }
-    }
 
-    private void OnCollisionEnter2D(Collision2D collision) {
-        if (!isKickBack) {
-            if (collision.collider.CompareTag("Player")) {
-                if (collision.collider.GetComponent<Cross>().Hit(transform)) {
-                    Destroy(gameObject);
+        //搜索玩家
+        foreach (var item in Physics2D.OverlapCircleAll(transform.position, outerRadius, GameManager.instance.layer_Player)) {
+            if (item.GetComponent<Cross>().Hit(transform)) {
+                Destroy(gameObject);
+            }
+        }
+
+        if (isKickBack) {
+            foreach (var item in Physics2D.OverlapCircleAll(transform.position, outerRadius, GameManager.instance.layer_Missile)) {
+                if(item.gameObject != gameObject) {
+                    GameManager.instance.ModifyFocusValue(2);
+                    item.GetComponent<Missile>().Die();
                 }
             }
-        } 
+        }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision) {
-        if (isKickBack) {
-            if (collision.CompareTag("Missile")) {
-                GameManager.instance.ModifyFocusValue(2);
-
-                collision.GetComponent<Missile>().Die();
-            }
-        }
+    private void OnDrawGizmos() {
+        Gizmos.DrawWireSphere(transform.position, innerRadius);
     }
 
     //变化透明度
@@ -65,11 +69,17 @@ public class Missile : MonoBehaviour {
         }
     }
 
+    public float missileKickSpeedMultiplier {
+        get {
+            return GameManager.sniperData.missileKickSpeedMultiplier;
+        }
+    }
+
     //踢回
     public void Kick(Vector2 dir) {
         this.dir = dir;
 
-        speed *= 3;
+        speedMultipiler *= missileKickSpeedMultiplier;
 
         isKickBack = true;
     }
@@ -79,4 +89,5 @@ public class Missile : MonoBehaviour {
 
         Destroy(gameObject);
     }
+
 }

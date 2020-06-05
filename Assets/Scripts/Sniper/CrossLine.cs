@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class CrossLine : MonoBehaviour {
     //和中点距离
-    public float distance;
+    float distance;
+
+    public float maxDistance = .8f;
 
     //抖动幅度
     public float magnitute = 1;
@@ -12,10 +14,19 @@ public class CrossLine : MonoBehaviour {
     public float speed = 2;
     bool moving;
 
+    public float offsetMagnitude = .03f;
+
     Camera cam;
 
     private void Awake() {
         cam = Camera.main;
+
+        //移动到最大距离
+        Vector2 dir = new Vector2(Random.Range(-1f, 1), Random.Range(-1f, 1)).normalized;
+
+        transform.position = (Vector2)cam.transform.position + dir * maxDistance;
+
+        distance = maxDistance;
     }
 
     void MoveTo(Vector2 pos) {
@@ -36,15 +47,17 @@ public class CrossLine : MonoBehaviour {
 
     private void Update() {
         if (!moving) {
-            float offsetMagnitude = .1f;
-            Vector2 randomOffset = new Vector2(Random.Range(-1, 1), Random.Range(-1, 1)) * offsetMagnitude;
+            Vector2 randomOffset = new Vector2(Random.Range(-1f, 1), Random.Range(-1f, 1)) * offsetMagnitude;
 
-            Vector2 dir = (transform.position - cam.transform.position).normalized;
+            Vector2 dir = ((Vector2)transform.position - (Vector2)cam.transform.position).normalized;
             Vector2 pos = (Vector2)cam.transform.position + dir * distance;
-
-            Debug.Log(dir.x + "," + dir.y);
 
             MoveTo(pos + randomOffset);
         }
+    }
+
+    //设置和中心的距离百分比
+    public void SetDistance(float percent) {
+        distance = maxDistance * percent;
     }
 }

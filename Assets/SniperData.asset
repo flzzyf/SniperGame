@@ -15,34 +15,38 @@ MonoBehaviour:
   levels:
   - waves:
     - missile: 0
-      number: 10
+      number: 15
       startAngle: 0
-      increasement: 18
-      interval: 0.04
-      waitTime: 1
+      increasement: 24
+      interval: 0.25
+      waitTime: 4
     - missile: 0
       number: 10
       startAngle: 180
       increasement: 18
       interval: 0.04
-      waitTime: 1
+      waitTime: 4
+    waitTime: 6
   - waves:
-    - missile: 0
-      number: 120
+    - missile: 1
+      number: 12
       startAngle: 45
-      increasement: 3
-      interval: 0.02
+      increasement: 30
+      interval: 0.08
       waitTime: 1
-    - missile: 0
-      number: 20
-      startAngle: 0
-      increasement: 10
-      interval: 0.03
+    - missile: 2
+      number: 8
+      startAngle: 270
+      increasement: -30
+      interval: 0.08
       waitTime: 0
+    waitTime: 0
   focusValueMax: 100
   focusRegenRate: 6
+  focusValueFocus: 5
+  focusValuePerSecond: 5
   speed: 0.8
-  minOuterCircleRadius: 0.002
+  minOuterCircleRadius: 0.05
   maxOuterCircleRadius: 0.2
   shrinkRatePerSecond: 0.5
   spreadRatePerSecond: 0.33
@@ -53,4 +57,5 @@ MonoBehaviour:
   missileRate: 0.5
   missileRateBoostPerAimRate: 0.03
   missileSpeed: 0.35
+  missileKickSpeedMultiplier: 3
   aimRateMultiplier: 2

@@ -28,16 +28,18 @@ public class GameManager : Singleton<GameManager> {
 
     Camera cam;
 
+    public LayerMask layer_Player;
+    public LayerMask layer_Missile;
+
     private void Awake() {
         cam = Camera.main;
 
         aimCircle.SetRadius(sniperData.aimRatePhase1Radius);
 
-        //StartCoroutine(AutoGenerateMissiles());
-
-        //StartCoroutine(GenerateObstacles());
-
         InitFocusValue();
+
+        StartCoroutine(GenerateLevels(sniperData.levels));
+
     }
 
     void Update() {
@@ -45,11 +47,6 @@ public class GameManager : Singleton<GameManager> {
         Circle targetCircle = new Circle { center = aimCircle.transform.position, radius = aimCircle.transform.localScale.x / 2 };
         Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
         aimState = AimState.Outside;
-
-        //if (targetCircle.IsPointInCircle(cross.transform.position)) {
-        //    aimState = AimState.Crossing;
-        //    chances += Time.deltaTime * sniperData.aimRateMultiplier;
-        //}
 
         if (targetCircle.GetCircleRelation(crossCircle) == CircleRelations.Contain) {
             aimState = AimState.Inside;
@@ -131,7 +128,8 @@ public class GameManager : Singleton<GameManager> {
         }
         
         //最多100
-        GameManager.chances = Mathf.Clamp(chances, 0, 100);
+        chances = Mathf.Clamp(chances, 0, 100);
+        GameManager.chances = chances;
 
         text_Chances.text = string.Format("稳定率 : {0}%", (chances).ToString("f0"));
         slider_Chances.value = chances / 100;
@@ -141,8 +139,14 @@ public class GameManager : Singleton<GameManager> {
         //Debug.Log(phase);
         float radius = sniperData.aimRatePhase1Radius + (sniperData.aimRatePhase2Radius - sniperData.aimRatePhase1Radius) * phase;
 
+        //设置瞄准圈半径
         aimCircle.SetRadius(radius);
+
+        //设置十字线和中心距离
+        crossLine.SetDistance(1 - chances / 100);
     }
+
+    public CrossLine crossLine;
 
     public void ModifyChances(float modify) {
         SetChances(chances + modify);
@@ -180,9 +184,22 @@ public class GameManager : Singleton<GameManager> {
 
     #region 生成弹幕
 
-    public Missile missilePrefab;
+    public Missile missile_Small;
+    public Missile missile_Middle;
+    public Missile missile_Big;
 
-    public void GenerateMissile(Vector2 pos) {
+    public void GenerateMissile(Vector2 pos, MissileType type) {
+        Missile missilePrefab;
+        if(type == MissileType.Ball_Big) {
+            missilePrefab = missile_Big;
+        }
+        else if(type == MissileType.Ball_Middle){
+            missilePrefab = missile_Middle;
+        }
+        else {
+            missilePrefab = missile_Small;
+        }
+
         Missile missile = Instantiate(missilePrefab, pos, Quaternion.identity, Camera.main.transform);
 
         //float offsetValue = .1f;
@@ -254,7 +271,7 @@ public class GameManager : Singleton<GameManager> {
     IEnumerator GenerateWave(Wave wave, Action onComplete = null) {
         float angle = wave.startAngle;
         for (int i = 0; i < wave.number; i++) {
-            GenerateMissile(GetMissileGeneratePoint(angle));
+            GenerateMissile(GetMissileGeneratePoint(angle), wave.missile);
 
             angle += wave.increasement;
 
@@ -286,21 +303,19 @@ public class GameManager : Singleton<GameManager> {
 
     //获取扩散圈上的飞弹
     List<Missile> GetMissilesOnCircle() {
-        var colliders = Physics2D.OverlapCircleAll(cross.transform.position, cross.outerCircleRadius, missileMask);
+        List<Missile> missileList = new List<Missile>();
 
-        HashSet<Missile> missileSet = new HashSet<Missile>();
-
-        for (int i = 0; i < colliders.Length; i++) {
-            Missile missile = colliders[i].GetComponent<Missile>();
+        foreach (var item in Physics2D.OverlapCircleAll(cross.transform.position, cross.outerCircleRadius, missileMask)) {
+            Missile missile = item.GetComponent<Missile>();
 
             Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
-            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.GetComponent<CircleCollider2D>().radius * missile.transform.localScale.x };
+            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.outerRadius };
             if (crossCircle.GetCircleRelation(missileCircle) == CircleRelations.Intersect) {
-                missileSet.Add(missile);
+                missileList.Add(missile);
             }
         }
 
-        return missileSet.ToList();
+        return missileList;
     }
 
     //获取圈内的飞弹
@@ -421,6 +436,17 @@ public class GameManager : Singleton<GameManager> {
     //集中被禁用
     bool focusDisbled;
 
+    public float focusValuePerSecond {
+        get {
+            return sniperData.focusValuePerSecond;
+        }
+    }
+    public float focusValueFocus {
+        get {
+            return sniperData.focusValueFocus;
+        }
+    }
+
     void UpdateFocus() {
         //如果集中没被禁用，按下按键，开始集中
         if (!focusDisbled) {
@@ -470,7 +496,7 @@ public class GameManager : Singleton<GameManager> {
         isFocusing = true;
 
         //扣除耐力
-        ModifyFocusValue(-5);
+        ModifyFocusValue(-focusValueFocus);
 
         //移动速度修改
         cross.speed *= .7f;
@@ -524,7 +550,7 @@ public class GameManager : Singleton<GameManager> {
 
         //每秒消耗耐力
         if(focusTime > .3f) {
-            ModifyFocusValue(-5 * Time.deltaTime);
+            ModifyFocusValue(-focusValuePerSecond * Time.deltaTime);
         }
 
         if (!cross.moving) {
