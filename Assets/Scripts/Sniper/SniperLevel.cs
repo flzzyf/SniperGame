@@ -7,7 +7,7 @@ public enum MissileType {
     Ball_Small,
     Ball_Middle,
     Ball_Big,
-    Missile
+    Missile,
 }
 
 [Serializable]

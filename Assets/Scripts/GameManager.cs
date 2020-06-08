@@ -194,7 +194,7 @@ public class GameManager : Singleton<GameManager> {
     public Missile missile_Middle;
     public Missile missile_Big;
 
-    public void GenerateMissile(Vector2 pos, MissileType type) {
+    public void GenerateMissile(Vector2 pos, MissileType type, Vector2 dir = default) {
         Missile missilePrefab;
         if(type == MissileType.Ball_Big) {
             missilePrefab = missile_Big;
@@ -208,18 +208,11 @@ public class GameManager : Singleton<GameManager> {
 
         Missile missile = Instantiate(missilePrefab, pos, Quaternion.identity, Camera.main.transform);
 
-        //float offsetValue = .1f;
-        //Vector2 randomOffset = new Vector2(Random.Range(-offsetValue, offsetValue), Random.Range(-offsetValue, offsetValue));
-        //Vector2 targetPoint = (Vector2)cross.transform.position + randomOffset;
-        Vector2 targetPoint = cam.transform.position;
-        Vector2 dir = (targetPoint - pos).normalized;
+        if(dir == default) {
+            Vector2 targetPoint = cam.transform.position;
+            dir = (targetPoint - pos).normalized;
+        }
         missile.MoveToward(dir);
-
-        //尺寸随机
-        //float size = Random.Range(1, 3);
-        //float speed = sniperData.missileSpeed / size;
-        //missile.transform.localScale = Vector3.one * size;
-        //missile.speed = speed;
     }
 
     //生成大型障碍物
@@ -348,7 +341,7 @@ public class GameManager : Singleton<GameManager> {
         //消除与扩散圈相交的飞弹
         var missiles = GetMissilesOnCircle();
         while (missiles.Count > 0) {
-            missiles[0].Die();
+            missiles[0].TakeDamage(1);
 
             ModifyFocusValue(2);
 
@@ -538,7 +531,7 @@ public class GameManager : Singleton<GameManager> {
             while (missiles.Count > 0) {
                 var m2 = GetMissilesInCircle(missiles[0].transform.position, .1f);
                 while (m2.Count > 0) {
-                    m2[0].Die();
+                    m2[0].TakeDamage(2);
 
                     m2.RemoveAt(0);
                 }

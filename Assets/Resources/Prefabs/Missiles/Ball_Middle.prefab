@@ -22,6 +22,16 @@ PrefabInstance:
       propertyPath: speedMultipiler
       value: 0.8
       objectReference: {fileID: 0}
+    - target: {fileID: 109810909311717075, guid: 47009e0ec1069f149b8670c4176c2d71,
+        type: 3}
+      propertyPath: transformToWhenHit
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 109810909311717075, guid: 47009e0ec1069f149b8670c4176c2d71,
+        type: 3}
+      propertyPath: transformWhenHit
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9097348705088212424, guid: 47009e0ec1069f149b8670c4176c2d71,
         type: 3}
       propertyPath: m_Name

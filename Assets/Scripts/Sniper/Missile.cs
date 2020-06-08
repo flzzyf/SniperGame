@@ -9,9 +9,6 @@ public class Missile : MonoBehaviour {
     Vector2 dir;
     Camera cam;
 
-    //被弹回
-    bool isKickBack;
-
     public ParticleSystem particle_MissileExplode;
 
     public float innerRadius = 0.05f;
@@ -52,7 +49,7 @@ public class Missile : MonoBehaviour {
             foreach (var item in Physics2D.OverlapCircleAll(transform.position, outerRadius, GameManager.instance.layer_Missile)) {
                 if(item.gameObject != gameObject) {
                     GameManager.instance.ModifyFocusValue(2);
-                    item.GetComponent<Missile>().Die();
+                    item.GetComponent<Missile>().TakeDamage(2);
                 }
             }
         }
@@ -69,6 +66,11 @@ public class Missile : MonoBehaviour {
         }
     }
 
+    #region 反弹
+
+    //被弹回
+    bool isKickBack;
+
     public float missileKickSpeedMultiplier {
         get {
             return GameManager.sniperData.missileKickSpeedMultiplier;
@@ -84,10 +86,32 @@ public class Missile : MonoBehaviour {
         isKickBack = true;
     }
 
+    #endregion
+
+    #region 被击中
+
+    //被击中后变形的
+    public MissileType transformToWhenHit;
+    public bool transformWhenHit;
+
+    //被击中
+    public void TakeDamage(int damage) {
+        //被击中后会变成其他飞弹
+        if(transformWhenHit) {
+            //生成其他飞弹
+            GameManager.instance.GenerateMissile(transform.position, transformToWhenHit, dir);
+        } 
+
+        //自毁
+        Die();
+    }
+
+    //死亡
     public void Die() {
         Instantiate(particle_MissileExplode.gameObject, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
     }
 
+    #endregion
 }
