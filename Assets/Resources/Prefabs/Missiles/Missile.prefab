@@ -108,7 +108,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9097348705088212424}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.549, y: 0.871, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9097348705413842703}
@@ -142,6 +142,8 @@ MonoBehaviour:
   particle_MissileExplode: {fileID: 6048405251229489486, guid: 2c9dd702c24f77f4c8103d76f2b9b024,
     type: 3}
   innerRadius: 0.05
+  transformToWhenHit: 0
+  transformWhenHit: 0
 --- !u!58 &1736812925526820878
 CircleCollider2D:
   m_ObjectHideFlags: 0

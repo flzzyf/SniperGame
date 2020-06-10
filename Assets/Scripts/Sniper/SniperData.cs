@@ -79,4 +79,7 @@ public class SniperData : ScriptableObject {
     [Header("测试")]
     [Space(20)]
     public float aimRateMultiplier = 2;
+
+    public ParticleSystem particle_MissileExplode;
+
 }

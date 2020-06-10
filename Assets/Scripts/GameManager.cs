@@ -308,7 +308,7 @@ public class GameManager : Singleton<GameManager> {
             Missile missile = item.GetComponent<Missile>();
 
             Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
-            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.outerRadius };
+            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.radius_Outside };
             if (crossCircle.GetCircleRelation(missileCircle) == CircleRelations.Intersect) {
                 missileList.Add(missile);
             }
