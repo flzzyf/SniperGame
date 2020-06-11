@@ -8,13 +8,14 @@ public class Missile : MonoBehaviour {
     [Header("生命值")]
     public int hp = 1;
 
-    [Header("整体大小")]
-    public float scale = .03f;
+    [Header("外圈半径")]
+    [Range(.01f, .15f)]
+    public float radius_Outside = .02f;
 
     private void FixedUpdate() {
         UpdateMove();
 
-        UpdateSearchTarget();
+        //UpdateSearchTarget();
     }
 
     #region 移动
@@ -38,26 +39,23 @@ public class Missile : MonoBehaviour {
     //被弹回
     bool isKickBack;
 
-    [Range(0, 1)]
-    public float radius_Outside = 1f;
+    //void UpdateSearchTarget() {
+    //    //搜索玩家
+    //    foreach (var item in Physics2D.OverlapCircleAll(transform.position, radiusWithScale, GameManager.instance.layer_Player)) {
+    //        if (item.GetComponent<Cross>().Hit(transform)) {
+    //            Destroy(gameObject);
+    //        }
+    //    }
 
-    void UpdateSearchTarget() {
-        //搜索玩家
-        foreach (var item in Physics2D.OverlapCircleAll(transform.position, radius_Outside * scale, GameManager.instance.layer_Player)) {
-            if (item.GetComponent<Cross>().Hit(transform)) {
-                Destroy(gameObject);
-            }
-        }
-
-        if (isKickBack) {
-            foreach (var item in Physics2D.OverlapCircleAll(transform.position, radius_Outside * scale, GameManager.instance.layer_Missile)) {
-                if (item.gameObject != gameObject) {
-                    GameManager.instance.ModifyFocusValue(2);
-                    item.GetComponent<Missile>().TakeDamage(2);
-                }
-            }
-        }
-    }
+    //    if (isKickBack) {
+    //        foreach (var item in Physics2D.OverlapCircleAll(transform.position, radiusWithScale, GameManager.instance.layer_Missile)) {
+    //            if (item.gameObject != gameObject) {
+    //                GameManager.instance.ModifyFocusValue(2);
+    //                item.GetComponent<Missile>().TakeDamage(2);
+    //            }
+    //        }
+    //    }
+    //}
 
     #endregion
 
@@ -123,4 +121,11 @@ public class Missile : MonoBehaviour {
     }
 
     #endregion
+
+    //玩家检测器
+    public CollideDetector playerDetector;
+
+    private void OnValidate() {
+        playerDetector.GetComponent<CircleCollider2D>().radius = radius_Outside;
+    }
 }

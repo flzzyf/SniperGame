@@ -7,25 +7,35 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 518113065107355249, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.0251
+      objectReference: {fileID: 0}
     - target: {fileID: 3006578509643919432, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_Radius
       value: 0.025
       objectReference: {fileID: 0}
+    - target: {fileID: 3006578509643919432, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4054225171487102145, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.025099998
+      value: 0.0268068
       objectReference: {fileID: 0}
     - target: {fileID: 4054225171487102145, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.025099998
+      value: 0.0268068
       objectReference: {fileID: 0}
     - target: {fileID: 4054225171487102145, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.025099998
+      value: 0.0268068
       objectReference: {fileID: 0}
     - target: {fileID: 4093451235939928366, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
@@ -90,22 +100,49 @@ PrefabInstance:
     - target: {fileID: 7369782246253455893, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.05
+      value: 0.0502
       objectReference: {fileID: 0}
     - target: {fileID: 7369782246253455893, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.05
+      value: 0.0502
       objectReference: {fileID: 0}
     - target: {fileID: 7369782246253455893, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.05
+      value: 0.0502
       objectReference: {fileID: 0}
     - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: scale
       value: 0.05
       objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: radius_Outside
+      value: 0.0251
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: playerDetector
+      value: 
+      objectReference: {fileID: 2909872716987932530}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: radius_InsidePercent
+      value: 0.534
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 74d75f5ff1465e54fa008aed72717f1b, type: 3}
+--- !u!114 &2909872716987932530 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8018124420440450357, guid: 74d75f5ff1465e54fa008aed72717f1b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5127322320336484935}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8852dffac50bcbd41bdfb4d419e8f15b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
