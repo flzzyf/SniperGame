@@ -10,9 +10,14 @@ PrefabInstance:
     - target: {fileID: 518113065107355249, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_Radius
-      value: 0.105
+      value: 0.0525
       objectReference: {fileID: 0}
     - target: {fileID: 3006578509643919432, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.105
+      objectReference: {fileID: 0}
+    - target: {fileID: 3809110032853609448, guid: 74d75f5ff1465e54fa008aed72717f1b,
         type: 3}
       propertyPath: m_Radius
       value: 0.105
@@ -116,6 +121,31 @@ PrefabInstance:
         type: 3}
       propertyPath: radius_Outside
       value: 0.105
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: hp
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: speedMultipiler
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: radius_Outer
+      value: 0.105
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: transformToWhenHit
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602421016014628226, guid: 74d75f5ff1465e54fa008aed72717f1b,
+        type: 3}
+      propertyPath: transformWhenHit
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 74d75f5ff1465e54fa008aed72717f1b, type: 3}

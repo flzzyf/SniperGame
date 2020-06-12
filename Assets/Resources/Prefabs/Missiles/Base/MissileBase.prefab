@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 731137645188080414}
   - component: {fileID: 3010801388688843218}
+  - component: {fileID: 387431814718800461}
   m_Layer: 8
   m_Name: PlayerDetector
   m_TagString: Untagged
@@ -43,6 +44,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8852dffac50bcbd41bdfb4d419e8f15b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  missile: {fileID: 0}
+--- !u!50 &387431814718800461
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2605732972284882828}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &6808039925788848460
 GameObject:
   m_ObjectHideFlags: 0

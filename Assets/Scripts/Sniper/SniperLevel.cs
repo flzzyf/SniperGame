@@ -4,10 +4,13 @@ using UnityEngine;
 using System;
 
 public enum MissileType {
-    Ball_Small,
-    Ball_Middle,
-    Ball_Big,
-    Missile,
+    小型,
+    中型,
+    大型,
+    防御型小,
+    防御型中,
+    防御型大,
+    引爆型
 }
 
 [Serializable]

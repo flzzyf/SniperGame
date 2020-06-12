@@ -190,23 +190,45 @@ public class GameManager : Singleton<GameManager> {
 
     #region 生成弹幕
 
-    public Missile missile_Small;
-    public Missile missile_Middle;
-    public Missile missile_Big;
+    [Serializable]
+    public struct MissileTypes {
+        public Missile missile_Small;
+        public Missile missile_Middle;
+        public Missile missile_Big;
+        public Missile def_Small;
+        public Missile def_Middle;
+        public Missile def_Large;
+        public Missile bomb;
+    }
+
+    public MissileTypes missileType;
+
+    List<Missile> missileList = new List<Missile>();
 
     public void GenerateMissile(Vector2 pos, MissileType type, Vector2 dir = default) {
         Missile missilePrefab;
-        if(type == MissileType.Ball_Big) {
-            missilePrefab = missile_Big;
+        if(type == MissileType.大型) {
+            missilePrefab = missileType.missile_Big;
         }
-        else if(type == MissileType.Ball_Middle){
-            missilePrefab = missile_Middle;
-        }
-        else {
-            missilePrefab = missile_Small;
+        else if(type == MissileType.中型){
+            missilePrefab = missileType.missile_Middle;
+        } else if (type == MissileType.防御型小) {
+            missilePrefab = missileType.def_Small;
+        } else if (type == MissileType.防御型中) {
+            missilePrefab = missileType.def_Middle;
+        } else if (type == MissileType.防御型大) {
+            missilePrefab = missileType.def_Large;
+        } else if (type == MissileType.引爆型) {
+            missilePrefab = missileType.bomb;
+        } else {
+            missilePrefab = missileType.missile_Small;
         }
 
         Missile missile = Instantiate(missilePrefab, pos, Quaternion.identity, Camera.main.transform);
+        missileList.Add(missile);
+        missile.onDestory = () => {
+            missileList.Remove(missile);
+        };
 
         if(dir == default) {
             Vector2 targetPoint = cam.transform.position;
@@ -305,30 +327,33 @@ public class GameManager : Singleton<GameManager> {
         List<Missile> missileList = new List<Missile>();
 
         foreach (var item in Physics2D.OverlapCircleAll(cross.transform.position, cross.outerCircleRadius, missileMask)) {
-            Missile missile = item.GetComponent<Missile>();
+            Missile missile = item.GetComponent<CollideDetector>().missile;
 
             Circle crossCircle = new Circle { center = cross.transform.position, radius = cross.outerCircleRadius };
-            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.radius_Outside };
+            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.OuterRadius() };
             if (crossCircle.GetCircleRelation(missileCircle) == CircleRelations.Intersect) {
                 missileList.Add(missile);
             }
         }
+
 
         return missileList;
     }
 
     //获取圈内的飞弹
     List<Missile> GetMissilesInCircle(Vector2 pos, float radius) {
-        var colliders = Physics2D.OverlapCircleAll(pos, radius, missileMask);
-
         HashSet<Missile> missileSet = new HashSet<Missile>();
 
-        for (int i = 0; i < colliders.Length; i++) {
-            Missile missile = colliders[i].GetComponent<Missile>();
+        foreach (var item in Physics2D.OverlapCircleAll(pos, radius, missileMask)) {
+            Missile missile = item.GetComponent<CollideDetector>().missile;
 
-            Circle crossCircle = new Circle { center = pos, radius = radius };
-            Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.GetComponent<CircleCollider2D>().radius * missile.transform.localScale.x };
-            if (crossCircle.GetCircleRelation(missileCircle) != CircleRelations.Separate) {
+            if (!missileSet.Contains(missile)) {
+                Circle crossCircle = new Circle { center = pos, radius = radius };
+                Circle missileCircle = new Circle { center = missile.transform.position, radius = missile.OuterRadius() };
+                if (crossCircle.GetCircleRelation(missileCircle) != CircleRelations.Separate) {
+                    missileSet.Add(missile);
+                }
+
                 missileSet.Add(missile);
             }
         }
@@ -358,6 +383,12 @@ public class GameManager : Singleton<GameManager> {
             missiles[0].Kick(dir);
 
             missiles.RemoveAt(0);
+        }
+    }
+
+    public void KillAllMissile() {
+        while(missileList.Count > 0) {
+            missileList[0].Remove();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,14 +9,29 @@ public class Missile : MonoBehaviour {
     [Header("生命值")]
     public int hp = 1;
 
-    [Header("外圈半径")]
-    [Range(.01f, .15f)]
-    public float radius_Outside = .02f;
+    public virtual float OuterRadius() {
+        return 0;
+    }
+
+    private void Awake() {
+        cam = Camera.main;
+
+        Init();
+    }
+
+    protected virtual void Init() {
+
+    }
+
+    private void Update() {
+        //离屏幕太远自动清除
+        if (Vector2.Distance(cam.transform.position, transform.position) > 2) {
+            Remove();
+        }
+    }
 
     private void FixedUpdate() {
         UpdateMove();
-
-        //UpdateSearchTarget();
     }
 
     #region 移动
@@ -34,32 +50,10 @@ public class Missile : MonoBehaviour {
 
     #endregion
 
-    #region 搜索目标
+    #region 踢回
 
     //被弹回
     bool isKickBack;
-
-    //void UpdateSearchTarget() {
-    //    //搜索玩家
-    //    foreach (var item in Physics2D.OverlapCircleAll(transform.position, radiusWithScale, GameManager.instance.layer_Player)) {
-    //        if (item.GetComponent<Cross>().Hit(transform)) {
-    //            Destroy(gameObject);
-    //        }
-    //    }
-
-    //    if (isKickBack) {
-    //        foreach (var item in Physics2D.OverlapCircleAll(transform.position, radiusWithScale, GameManager.instance.layer_Missile)) {
-    //            if (item.gameObject != gameObject) {
-    //                GameManager.instance.ModifyFocusValue(2);
-    //                item.GetComponent<Missile>().TakeDamage(2);
-    //            }
-    //        }
-    //    }
-    //}
-
-    #endregion
-
-    #region 踢回
 
     public float missileKickSpeedMultiplier {
         get {
@@ -68,7 +62,7 @@ public class Missile : MonoBehaviour {
     }
 
     //踢回
-    public void Kick(Vector2 dir) {
+    public virtual void Kick(Vector2 dir) {
         this.dir = dir;
 
         speedMultipiler *= missileKickSpeedMultiplier;
@@ -82,17 +76,6 @@ public class Missile : MonoBehaviour {
 
     Camera cam;
 
-    private void Awake() {
-        cam = Camera.main;
-    }
-
-    private void Update() {
-        //离屏幕太远自动清除
-        if (Vector2.Distance(cam.transform.position, transform.position) > 2) {
-            Destroy(gameObject);
-        }
-    }
-
     #endregion
 
     #region 被击中
@@ -101,31 +84,42 @@ public class Missile : MonoBehaviour {
     public MissileType transformToWhenHit;
     public bool transformWhenHit;
 
-    //被击中
-    public void TakeDamage(int damage) {
-        //被击中后会变成其他飞弹
-        if (transformWhenHit) {
-            //生成其他飞弹
-            GameManager.instance.GenerateMissile(transform.position, transformToWhenHit, dir);
-        }
+    [Header("无敌")]
+    public bool invincible;
 
-        //自毁
-        Die();
+    //被击中
+    public virtual void TakeDamage(int damage) {
+        if (invincible)
+            return;
+
+        hp -= damage;
+
+        if(hp <= 0) {
+            //被击中后会变成其他飞弹
+            if (transformWhenHit) {
+                //生成其他飞弹
+                GameManager.instance.GenerateMissile(transform.position, transformToWhenHit, dir);
+            }
+
+            //自毁
+            Die();
+        }
     }
 
+    public Action onDestory;
+
     //死亡
-    public void Die() {
+    public virtual void Die() {
         Instantiate(GameManager.sniperData.particle_MissileExplode.gameObject, transform.position, Quaternion.identity);
 
+        Remove();
+    }
+
+    public void Remove() {
         Destroy(gameObject);
+        onDestory?.Invoke();
     }
 
     #endregion
 
-    //玩家检测器
-    public CollideDetector playerDetector;
-
-    private void OnValidate() {
-        playerDetector.GetComponent<CircleCollider2D>().radius = radius_Outside;
-    }
 }

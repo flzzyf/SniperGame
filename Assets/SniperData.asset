@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levels:
   - waves:
-    - missile: 0
+    - missile: 6
       number: 15
       startAngle: 0
       increasement: 24
       interval: 0.25
       waitTime: 4
-    - missile: 0
+    - missile: 5
       number: 10
       startAngle: 180
       increasement: 18
@@ -85,7 +85,7 @@ MonoBehaviour:
   missileRate: 0.5
   missileRateBoostPerAimRate: 0.03
   missileSpeed: 0.4
-  missileKickSpeedMultiplier: 30
+  missileKickSpeedMultiplier: 3
   aimRateMultiplier: 2
   particle_MissileExplode: {fileID: 6048405251229489486, guid: 2c9dd702c24f77f4c8103d76f2b9b024,
     type: 3}
