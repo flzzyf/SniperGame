@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levels:
   - waves:
-    - missile: 6
+    - missile: 2
       number: 15
       startAngle: 0
       increasement: 24
