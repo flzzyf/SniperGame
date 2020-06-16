@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public enum MissileType {
-    小型,
-    中型,
-    大型,
-    防御型小,
-    防御型中,
-    防御型大,
-    引爆型
-}
-
 [Serializable]
 public class Wave {
     [Header("弹幕类型")]

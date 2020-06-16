@@ -199,6 +199,9 @@ public class GameManager : Singleton<GameManager> {
         public Missile def_Middle;
         public Missile def_Large;
         public Missile bomb;
+        public Missile spread;
+        public Missile bouncy;
+        public Missile tracer;
     }
 
     public MissileTypes missileType;
@@ -220,6 +223,12 @@ public class GameManager : Singleton<GameManager> {
             missilePrefab = missileType.def_Large;
         } else if (type == MissileType.引爆型) {
             missilePrefab = missileType.bomb;
+        } else if (type == MissileType.分裂型) {
+            missilePrefab = missileType.spread;
+        } else if (type == MissileType.反弹型) {
+            missilePrefab = missileType.bouncy;
+        } else if (type == MissileType.跟踪型) {
+            missilePrefab = missileType.tracer;
         } else {
             missilePrefab = missileType.missile_Small;
         }
@@ -388,8 +397,12 @@ public class GameManager : Singleton<GameManager> {
 
     public void KillAllMissile() {
         while(missileList.Count > 0) {
-            missileList[0].Remove();
+            missileList[0].Die();
         }
+    }
+
+    public void OnMissileDie(Missile missile) {
+        missileList.Remove(missile);
     }
 
     #endregion

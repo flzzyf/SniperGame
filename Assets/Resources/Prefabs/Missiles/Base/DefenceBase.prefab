@@ -291,17 +291,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedMultipiler: 1
   hp: 1
-  transformToWhenHit: 0
-  transformWhenHit: 0
-  invincible: 1
-  radius_Outer: 0.15
-  radius_InsidePercent: 0.5
-  gfx_Inner: {fileID: 8058501059300785701}
-  gfx_Outer: {fileID: 6225779631856236520}
   color_Inside: {r: 0.5, g: 0.5, b: 0.5, a: 0.77254903}
   color_Outside: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 0.74509805}
   playerDetector: {fileID: 4023572934681230245}
   missileDetector: {fileID: 6603837115841399590}
+  gfx_Inner: {fileID: 8058501059300785701}
+  gfx_Outer: {fileID: 6225779631856236520}
+  faceTargetDir: 0
+  transformWhenHit: 0
+  transformToWhenHit: 0
+  invincible: 1
+  radius_Outer: 0.15
+  radius_InsidePercent: 0.5
 --- !u!1001 &2170200301620025975
 PrefabInstance:
   m_ObjectHideFlags: 0

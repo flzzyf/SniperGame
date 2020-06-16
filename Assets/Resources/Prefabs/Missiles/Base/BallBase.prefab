@@ -178,17 +178,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedMultipiler: 1
   hp: 1
-  transformToWhenHit: 0
+  color_Inside: {r: 1, g: 1, b: 1, a: 0.7294118}
+  color_Outside: {r: 1, g: 1, b: 1, a: 0.57254905}
+  playerDetector: {fileID: 8018124420440450357}
+  missileDetector: {fileID: 7553032089453287232}
+  gfx_Inner: {fileID: 4054225171487102145}
+  gfx_Outer: {fileID: 7369782246253455893}
+  faceTargetDir: 0
   transformWhenHit: 0
+  transformToWhenHit: 0
   invincible: 0
   radius_Outer: 0.02
   radius_InsidePercent: 0.5
-  color_Inside: {r: 1, g: 0.79607844, b: 0, a: 0.7294118}
-  color_Outside: {r: 1, g: 0.53839076, b: 0, a: 0.57254905}
-  gfx_Inner: {fileID: 4054225171487102145}
-  gfx_Outer: {fileID: 7369782246253455893}
-  playerDetector: {fileID: 8018124420440450357}
-  missileDetector: {fileID: 7553032089453287232}
 --- !u!1 &6668378745488553189
 GameObject:
   m_ObjectHideFlags: 0
@@ -260,7 +261,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: a70e344f4335a404f81deae3715ffe2e, type: 3}
-  m_Color: {r: 1, g: 0.79607844, b: 0, a: 0.7294118}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.7294118}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -378,7 +379,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: a70e344f4335a404f81deae3715ffe2e, type: 3}
-  m_Color: {r: 1, g: 0.53839076, b: 0, a: 0.57254905}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.57254905}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

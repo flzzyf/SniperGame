@@ -623,7 +623,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &396580954
 Transform:
   m_ObjectHideFlags: 0
@@ -1290,6 +1290,10 @@ MonoBehaviour:
     def_Large: {fileID: 4806332427362568499, guid: 85884c998edbffc458aea6e7e08065ee,
       type: 3}
     bomb: {fileID: 2626935072033561374, guid: 82aa7cd2befd4114ea47301a92b7005b, type: 3}
+    spread: {fileID: 3969620618484913509, guid: bee87d4aba0184546932fe990ef75761,
+      type: 3}
+    bouncy: {fileID: 0}
+    tracer: {fileID: 786203014805332369, guid: 26f98002ba8783341bf835878b2cd32f, type: 3}
   missileMask:
     serializedVersion: 2
     m_Bits: 1024

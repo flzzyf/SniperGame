@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levels:
   - waves:
-    - missile: 2
+    - missile: 7
       number: 15
       startAngle: 0
       increasement: 24
       interval: 0.25
       waitTime: 4
-    - missile: 5
+    - missile: 9
       number: 10
       startAngle: 180
       increasement: 18
