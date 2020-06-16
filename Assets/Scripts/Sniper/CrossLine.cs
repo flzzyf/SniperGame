@@ -1,22 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CrossLine : MonoBehaviour {
-    //和中点距离
-    float distance;
-
-    public float maxDistance = .8f;
-
+    [Header("移动速度")]
     public float speed = 2;
     bool moving;
 
-    //抖动幅度
+    [Header("抖动幅度")]
     public float offsetMagnitude = .03f;
 
     Camera cam;
 
-    [Header("十字线区域")]
     public Transform crossLineCircle;
 
     public float crossLineCircleRadius = .2f;
@@ -29,45 +25,59 @@ public class CrossLine : MonoBehaviour {
         cam = Camera.main;
 
         //移动到最大距离
-        Vector2 dir = new Vector2(Random.Range(-1f, 1), Random.Range(-1f, 1)).normalized;
-
-        transform.position = (Vector2)cam.transform.position + dir * maxDistance;
-
-        distance = maxDistance;
+        Vector2 dir = new Vector2(UnityEngine.Random.Range(-1f, 1), UnityEngine.Random.Range(-1f, 1)).normalized;
 
         crossLineCircleRadius = GameManager.sniperData.crossLineRadius;
         crossLineCircle.localScale = Vector3.one * crossLineCircleRadius * 2;
+
+        lastMousePos = Input.mousePosition;
+
+        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+
+        Action randomMove = default;
+            
+        randomMove = () => {
+            Vector2 randomOffset = new Vector2(UnityEngine.Random.Range(-1f, 1), UnityEngine.Random.Range(-1f, 1)) * offsetMagnitude;
+            MoveTo(randomOffset, randomMove);
+        };
+
+        randomMove.Invoke();
     }
 
-    void MoveTo(Vector2 pos) {
-        StartCoroutine(MoveToCor(pos));
+    Vector2 mousePos;
+    Vector2 lastMousePos;
+
+    private void Update() {
+        //鼠标移动
+        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        if ((Vector2)Input.mousePosition != lastMousePos) {
+            lastMousePos = Input.mousePosition;
+
+            transform.parent.position = mousePos;
+        }
     }
-    IEnumerator MoveToCor(Vector2 pos) {
+
+    #region 移动
+
+    void MoveTo(Vector2 offset, Action onComplete = null) {
+        StartCoroutine(MoveToCor(offset, onComplete));
+    }
+    IEnumerator MoveToCor(Vector2 offset, Action onComplete = null) {
         moving = true;
+        Vector2 targetPos = mousePos + offset;
 
-        while(Vector2.Distance(transform.position, pos) > speed * Time.fixedDeltaTime) {
-            Vector2 dir = (pos - (Vector2)transform.position).normalized;
+        while (Vector2.Distance(transform.position, targetPos) >= speed * Time.fixedDeltaTime) {
+            targetPos = mousePos + offset;
+            Vector2 dir = (targetPos - (Vector2)transform.position).normalized;
             transform.Translate(dir * speed * Time.fixedDeltaTime);
 
             yield return new WaitForFixedUpdate();
         }
 
         moving = false;
+
+        onComplete?.Invoke();
     }
 
-    private void Update() {
-        if (!moving) {
-            Vector2 randomOffset = new Vector2(Random.Range(-1f, 1), Random.Range(-1f, 1)) * offsetMagnitude;
-
-            Vector2 dir = ((Vector2)transform.position - (Vector2)cam.transform.position).normalized;
-            Vector2 pos = (Vector2)cam.transform.position + dir * distance;
-
-            MoveTo(pos + randomOffset);
-        }
-    }
-
-    //设置和中心的距离百分比
-    public void SetDistance(float percent) {
-        distance = maxDistance * percent;
-    }
+    #endregion
 }

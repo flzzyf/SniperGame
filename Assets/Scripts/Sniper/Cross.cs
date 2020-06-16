@@ -7,9 +7,6 @@ public class Cross : MonoBehaviour {
 
     Vector2 input;
 
-    Vector2 mousePos;
-    Vector2 lastMousePos;
-
     private void Awake() {
         speed = GameManager.sniperData.speed;
         minOuterCircleRadius = GameManager.sniperData.minOuterCircleRadius;
@@ -21,8 +18,6 @@ public class Cross : MonoBehaviour {
     }
 
     void Start() {
-        lastMousePos = Input.mousePosition;
-
         targetPoint = transform.position;
     }
 
@@ -32,14 +27,6 @@ public class Cross : MonoBehaviour {
         //方向键移动
         if(input != default) {
             targetPoint = (Vector2)transform.position + input.normalized * speed * Time.fixedDeltaTime;
-        }
-
-        //鼠标移动
-        mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if((Vector2)Input.mousePosition != lastMousePos) {
-            lastMousePos = Input.mousePosition;
-
-            targetPoint = mousePos;
         }
 
         moving = (Vector2)transform.position != targetPoint;

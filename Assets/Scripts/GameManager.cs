@@ -147,9 +147,6 @@ public class GameManager : Singleton<GameManager> {
 
         //设置瞄准圈半径
         aimCircle.SetRadius(radius);
-
-        //设置十字线和中心距离
-        crossLine.SetDistance(1 - chances / 100);
     }
 
     public CrossLine crossLine;
