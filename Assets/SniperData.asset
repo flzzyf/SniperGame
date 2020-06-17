@@ -13,58 +13,8 @@ MonoBehaviour:
   m_Name: SniperData
   m_EditorClassIdentifier: 
   levels:
-  - waves:
-    - missile: 7
-      number: 15
-      startAngle: 0
-      increasement: 24
-      interval: 0.25
-      waitTime: 4
-    - missile: 9
-      number: 10
-      startAngle: 180
-      increasement: 18
-      interval: 0.04
-      waitTime: 4
-    - missile: 0
-      number: 3
-      startAngle: 180
-      increasement: 5
-      interval: 0.04
-      waitTime: 1
-    - missile: 0
-      number: 3
-      startAngle: 90
-      increasement: 5
-      interval: 0.04
-      waitTime: 1
-    - missile: 0
-      number: 3
-      startAngle: 270
-      increasement: 5
-      interval: 0.04
-      waitTime: 1
-    - missile: 0
-      number: 20
-      startAngle: 120
-      increasement: 30
-      interval: 0.08
-      waitTime: 2
-    waitTime: 6
-  - waves:
-    - missile: 1
-      number: 12
-      startAngle: 45
-      increasement: 30
-      interval: 0.08
-      waitTime: 1
-    - missile: 2
-      number: 8
-      startAngle: 270
-      increasement: -30
-      interval: 0.08
-      waitTime: 0
-    waitTime: 0
+  - {fileID: 11400000, guid: 27eb109bdc7fab448b8bd5e5eeb49f55, type: 2}
+  - {fileID: 11400000, guid: 28f30f83682658c4e94446474985169e, type: 2}
   crossLineRadius: 0.05
   focusValueMax: 100
   focusRegenRate: 30

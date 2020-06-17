@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public class Wave {
+public class Wave{
     [Header("弹幕类型")]
     public MissileType missile;
     [Header("生成数量")]
@@ -21,8 +21,8 @@ public class Wave {
     public float waitTime;
 }
 
-[Serializable]
-public class SniperLevel {
+[CreateAssetMenu(menuName = "ScriptableObject/SniperLevel")]
+public class SniperLevel : ScriptableObject {
     public Wave[] waves;
 
     [Header("和下关间隔时间")]

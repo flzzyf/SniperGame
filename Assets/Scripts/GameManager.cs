@@ -38,10 +38,14 @@ public class GameManager : Singleton<GameManager> {
 
         InitFocusValue();
 
-        StartCoroutine(GenerateLevels(sniperData.levels, () => {
-            StartCoroutine(GenerateLevels(sniperData.levels));
-        }));
+        Action generateLevel = null;
+        generateLevel = () => {
+            StartCoroutine(GenerateLevels(sniperData.levels, () => {
+                generateLevel();
+            }));
+        };
 
+        generateLevel();
     }
 
     void Update() {
