@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 //瞄准圈
 public class AimCircle : MonoBehaviour {
@@ -13,6 +14,10 @@ public class AimCircle : MonoBehaviour {
 
     public void SetColor(Color color, float duration = .3f) {
         GetComponent<SpriteRenderer>().DOColor(color, duration);
+    }
+
+    public void MoveTo(Vector2 pos) {
+        transform.DOMove(pos, .2f);
     }
 
 }

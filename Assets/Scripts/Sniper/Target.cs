@@ -9,22 +9,22 @@ public class Target : MonoBehaviour {
     //    targetPos = transform.position;
     //}
 
-    //void Update() {
-    //    isMoving = (targetPos != (Vector2)transform.position);
-    //    GetComponent<Animator>().SetBool("Moving", isMoving);
+    void Update() {
+        //isMoving = (targetPos != (Vector2)transform.position);
+        GetComponent<Animator>().SetBool("Moving", isMoving);
 
-    //    if (isMoving) {
-    //        MoveTo(targetPos);
+        //if (isMoving) {
+        //    MoveTo(targetPos);
 
-    //        //Face(targetPos);
-    //    } else {
-    //        StartCoroutine(DelaySetNextTarget());
-    //    }
-    //}
+        //    //Face(targetPos);
+        //} else {
+        //    StartCoroutine(DelaySetNextTarget());
+        //}
+    }
 
     //Vector2 targetPos;
 
-    //bool isMoving;
+    public bool isMoving;
 
     //void MoveTo(Vector2 pos) {
     //    if(Vector2.Distance(transform.position, pos) > speed * Time.fixedDeltaTime) {

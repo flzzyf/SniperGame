@@ -3,8 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+public enum SniperWaveType {
+    创建弹幕,
+    进入警戒模式,
+}
+
 [Serializable]
 public class Wave{
+    public SniperWaveType waveType;
+
+    [Header("警戒模式持续时间")]
+    public float alertDuration;
+
     [Header("弹幕类型")]
     public MissileType missile;
     [Header("生成数量")]

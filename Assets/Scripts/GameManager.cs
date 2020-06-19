@@ -37,7 +37,9 @@ public class GameManager : Singleton<GameManager> {
         aimCircle.SetRadius(sniperData.aimRatePhase1Radius);
 
         InitFocusValue();
+    }
 
+    private void Start() {
         Action generateLevel = null;
         generateLevel = () => {
             StartCoroutine(GenerateLevels(sniperData.levels, () => {
@@ -46,6 +48,8 @@ public class GameManager : Singleton<GameManager> {
         };
 
         generateLevel();
+
+        StartTargetRandomMovement();
     }
 
     void Update() {
@@ -97,23 +101,47 @@ public class GameManager : Singleton<GameManager> {
         UpdateFocus();
 
         if (Input.GetKeyDown("f")) {
-            StartCoroutine(GenerateLevels(sniperData.levels));
+            //StartCoroutine(GenerateLevels(sniperData.levels));
+
+            TargetMoveTo(-3);
         }
     }
 
     #region 胜利界面
 
     public GameObject gameWinWindow;
-    bool gameWin;
+    [HideInInspector]
+    public bool gameWin;
 
     IEnumerator GameWin() {
         Time.timeScale = 0;
 
         gameWinWindow.SetActive(true);
 
-        yield return new WaitForSecondsRealtime(1);
+        yield return new WaitForSecondsRealtime(.1f);
 
         gameWin = true;
+    }
+
+    #endregion
+
+    #region 游戏失败
+
+    public GameObject gameLoseWindow;
+
+    public void GameLose() {
+        StartCoroutine(GameLoseCor());
+    }
+
+    IEnumerator GameLoseCor() {
+        Time.timeScale = 0;
+
+        gameLoseWindow.SetActive(true);
+
+        gameWin = true;
+
+        yield return new WaitForSecondsRealtime(.1f);
+
     }
 
     #endregion
@@ -300,14 +328,20 @@ public class GameManager : Singleton<GameManager> {
 
     //生成波次
     IEnumerator GenerateWave(Wave wave, Action onComplete = null) {
-        float angle = wave.startAngle;
-        for (int i = 0; i < wave.number; i++) {
-            GenerateMissile(GetMissileGeneratePoint(angle), wave.missile);
+        if(wave.waveType == SniperWaveType.创建弹幕) {
+            float angle = wave.startAngle;
+            for (int i = 0; i < wave.number; i++) {
+                GenerateMissile(GetMissileGeneratePoint(angle), wave.missile);
 
-            angle += wave.increasement;
+                angle += wave.increasement;
 
-            if(wave.interval > 0)
-                yield return new WaitForSeconds(wave.interval);
+                if (wave.interval > 0)
+                    yield return new WaitForSeconds(wave.interval);
+            }
+        } else if(wave.waveType == SniperWaveType.进入警戒模式) {
+            SniperAlertManager.instance.EnterAlert(wave.alertDuration);
+
+            yield return new WaitForSeconds(wave.alertDuration);
         }
 
         yield return new WaitForSeconds(wave.waitTime);
@@ -472,7 +506,7 @@ public class GameManager : Singleton<GameManager> {
     #region 集中
 
     //集中键
-    KeyCode[] focusKeys = { KeyCode.Space, KeyCode.Mouse0 };
+    KeyCode[] focusKeys = { KeyCode.Space };
 
     //集中中
     bool isFocusing;
@@ -547,9 +581,6 @@ public class GameManager : Singleton<GameManager> {
 
         //扣除耐力
         ModifyFocusValue(-focusValueFocus);
-
-        //移动速度修改
-        cross.speed *= .7f;
     }
 
     //结束集中
@@ -560,9 +591,6 @@ public class GameManager : Singleton<GameManager> {
         if (!isFocusClicked && focusTime < .3f) {
             FocusClick();
         }
-
-        //移动速度修改
-        cross.speed /= .7f;
 
         //瞬间扩散
         cross.CrossInstantSpread();
@@ -603,10 +631,8 @@ public class GameManager : Singleton<GameManager> {
             ModifyFocusValue(-focusValuePerSecond * Time.deltaTime);
         }
 
-        if (!cross.moving) {
-            //准心收缩
-            cross.CrossShrink();
-        }
+        //准心收缩
+        cross.CrossShrink();
     }
 
     //单击集中
@@ -622,15 +648,57 @@ public class GameManager : Singleton<GameManager> {
 
     #endregion
 
-    #region （废弃）背景移动
+    #region 目标移动
 
-    public float backgroundMoveSpeed = .03f;
+    public float targetMoveSpeed = .03f;
 
     public Transform background;
     public Target target;
 
-    //背景移动
-    void BackgroundMove(Vector2 dir) {
+    float targetX;
+
+    public Vector2 targetMovementRange;
+
+    //目标开始随机移动
+    void StartTargetRandomMovement() {
+        Action action = null;
+        action = () => {
+            float randomPoint = UnityEngine.Random.Range(targetMovementRange.x, targetMovementRange.y);
+
+            TargetMoveTo(randomPoint, action);
+        };
+
+        action.Invoke();
+    }
+
+    void TargetMoveTo(float x, Action onComplete = null) {
+        StartCoroutine(TargetMoveToCor(x, onComplete));
+    }
+    IEnumerator TargetMoveToCor(float x, Action onComplete = null) {
+        target.isMoving = true;
+
+        int dir = (int)Mathf.Sign(x - targetX);
+
+        target.Face(new Vector2(x, 0));
+
+        aimCircle.MoveTo(new Vector2(dir * .2f, aimCircle.transform.position.y));
+
+        while(Mathf.Abs(targetX - x) > targetMoveSpeed * Time.fixedDeltaTime) {
+            targetX += dir * targetMoveSpeed * Time.fixedDeltaTime;
+
+            background.Translate(Vector3.right * -dir * targetMoveSpeed * Time.fixedDeltaTime);
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        target.isMoving = false;
+
+        float randomDelay = UnityEngine.Random.Range(1, 3);
+        yield return new WaitForSeconds(randomDelay);
+
+        onComplete?.Invoke();
+
+        aimCircle.MoveTo(new Vector2(0, aimCircle.transform.position.y));
 
     }
 
@@ -654,6 +722,8 @@ public class GameManager : Singleton<GameManager> {
         float radius = Mathf.Sqrt(Mathf.Pow(ScreenSize.x, 2) + Mathf.Pow(ScreenSize.y, 2)) / 2;
         radius += .2f;
         Gizmos.DrawWireSphere(Camera.main.transform.position, radius);
+
+        Gizmos.DrawLine(Vector2.right * targetMovementRange.x, Vector2.right * targetMovementRange.y);
     }
 
 }

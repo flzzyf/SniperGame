@@ -10,23 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5880816346c3c244886d243e1df40b3a, type: 3}
-  m_Name: Level1
+  m_Name: Level3
   m_EditorClassIdentifier: 
-  waves:
-  - waveType: 1
-    alertDuration: 5
-    missile: 1
-    number: 12
-    startAngle: 0
-    increasement: 10
-    interval: 0.1
-    waitTime: 2
-  - waveType: 0
-    alertDuration: 0
-    missile: 7
-    number: 6
-    startAngle: 0
-    increasement: 60
-    interval: 0.2
-    waitTime: 0
+  waves: []
   waitTime: 0
