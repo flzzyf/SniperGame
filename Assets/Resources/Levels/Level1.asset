@@ -15,7 +15,7 @@ MonoBehaviour:
   waves:
   - waveType: 1
     alertDuration: 5
-    missile: 1
+    missile: 0
     number: 12
     startAngle: 0
     increasement: 10
@@ -23,7 +23,7 @@ MonoBehaviour:
     waitTime: 2
   - waveType: 0
     alertDuration: 0
-    missile: 7
+    missile: 1
     number: 6
     startAngle: 0
     increasement: 60

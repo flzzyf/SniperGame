@@ -17,6 +17,7 @@ public class AimCircle : MonoBehaviour {
     }
 
     public void MoveTo(Vector2 pos) {
+        transform.DOKill();
         transform.DOMove(pos, .2f);
     }
 

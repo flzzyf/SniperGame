@@ -679,7 +679,7 @@ public class GameManager : Singleton<GameManager> {
 
         int dir = (int)Mathf.Sign(x - targetX);
 
-        target.Face(new Vector2(x, 0));
+        target.Face(dir);
 
         aimCircle.MoveTo(new Vector2(dir * .2f, aimCircle.transform.position.y));
 
@@ -693,13 +693,12 @@ public class GameManager : Singleton<GameManager> {
 
         target.isMoving = false;
 
+        aimCircle.MoveTo(new Vector2(0, aimCircle.transform.position.y));
+
         float randomDelay = UnityEngine.Random.Range(1, 3);
         yield return new WaitForSeconds(randomDelay);
 
         onComplete?.Invoke();
-
-        aimCircle.MoveTo(new Vector2(0, aimCircle.transform.position.y));
-
     }
 
     #endregion

@@ -31,7 +31,8 @@ public class SniperAlertManager : Singleton<SniperAlertManager>{
             }
         }
 
-        if (Input.GetKeyDown("c")) {
+        if (isAlerting && Input.GetKeyDown("c")) {
+            GameManager.instance.KillAllMissile();
             ShowHidingPanel(hidingPanel.gameObject.activeSelf == false);
         }
     }
@@ -108,6 +109,8 @@ public class SniperAlertManager : Singleton<SniperAlertManager>{
         ShowAlertPanel(false);
 
         isAlerting = false;
+
+        ShowHidingPanel(false);
     }
 
     #endregion
